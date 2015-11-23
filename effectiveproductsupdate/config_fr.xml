@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>effectiveproductsupdate</name>
+	<displayName><![CDATA[Effective products management control]]></displayName>
+	<version><![CDATA[0.0.9]]></version>
+	<description><![CDATA[This module add new interface in products management.
+        It&#039;s fast, easy and reliable]]></description>
+	<author><![CDATA[Yves-Andr&eacute; Giroud]]></author>
+	<tab><![CDATA[back_office_features]]></tab>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall?]]></confirmUninstall>
+	<is_configurable>1</is_configurable>
+	<need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>

@@ -1,0 +1,100 @@
+<!--<div>{{product.reference}}</div>-->
+<!--<div>{{product.name}}</div>-->
+<!--<div>{{product.price | currency : ''}}</div>-->
+<!--<div>{{product}}</div>-->
+
+<form id="product_form" class="form-horizontal col-lg-12 col-md-12">
+
+    <div class="form-group col-md-12">
+        <label class="control-label col-lg-2 required" for="name_1">
+                <span class="label-tooltip" data-toggle="tooltip" title="">
+                    Nom
+                </span>
+        </label>
+
+        <div class="col-lg-7">
+            <div class="translatable-field row lang-1" style="display: block;">
+                <div class="col-lg-12">
+                    <input ng-disabled="disabled" type="text" id="name_1" class="form-control" ng-model="product.name"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="control-label col-lg-4 required">
+                <span class="label-tooltip" data-toggle="tooltip" title="">
+                    Référence
+                </span>
+        </label>
+
+        <div class="col-lg-8">
+            <div class="translatable-field row lang-1" style="display: block;">
+                <div class="col-lg-12">
+                    <input ng-disabled="disabled" type="text" class="form-control" ng-model="product.reference"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="control-label col-lg-4 required">
+                <span class="label-tooltip" data-toggle="tooltip" title="">
+                    Code-barres EAN-13 ou JAN
+                </span>
+        </label>
+
+        <div class="col-lg-8">
+            <div class="translatable-field row lang-1" style="display: block;">
+                <div class="col-lg-12">
+                    <input ng-disabled="disabled" type="text" class="form-control" ng-model="product.ean13"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="control-label col-lg-4 required">
+                    <span class="label-tooltip" data-toggle="tooltip" title="">
+                        Code-barre UPC
+                    </span>
+        </label>
+
+        <div class="col-lg-8">
+            <div class="translatable-field row lang-1" style="display: block;">
+                <div class="col-lg-12">
+                    <input ng-disabled="disabled" type="text" class="form-control" ng-model="product.upc"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="form-group col-md-12">
+        <label class="control-label col-lg-2 required">
+                <span class="label-tooltip" data-toggle="tooltip" title="">
+                   Résumé
+                </span>
+        </label>
+
+        <div class="col-lg-10">
+            <div class="translatable-field row lang-1" style="display: block;">
+                <div class="col-lg-12">
+                    <div ng-disabled="disabled" class="form-control" ng-model="product.description_short" contenteditable></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group col-md-12">
+        <label class="control-label col-lg-2 required">
+                <span class="label-tooltip" data-toggle="tooltip" title="">
+                   Description
+                </span>
+        </label>
+
+        <div class="col-lg-10">
+            <div class="translatable-field row lang-1" style="display: block;">
+                <div class="col-lg-12">
+                    <div ng-disabled="disabled" class="form-control" ng-model="product.description" contenteditable></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</form>

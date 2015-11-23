@@ -1,0 +1,402 @@
+<style type="text/css">
+    table.products-list td {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+    }
+    .products-list input {
+    }
+
+    table.products-list td .value {
+        cursor: pointer;
+        border-bottom: 1px solid transparent;
+        padding:2px;
+
+    }
+
+    table.products-list td .value:hover {
+        background-color: #FFF;
+        border-bottom: 1px solid #8b8b8b;
+    }
+
+    .editor {
+        position:relative;
+    }
+    .editable-cell {
+        position:relative;
+    }
+
+    .products-list .toolbox {
+        position: absolute;
+        display:none;
+        bottom:-25px;
+        right: 5px;
+        width: auto;
+        white-space: nowrap;
+        height: auto;
+        padding: 3px 10px;
+        background-color: white;
+        border: 1px solid #A0D0EB;
+    }
+    .products-list .toolbox.left {
+        left: 0;
+        right: auto;
+    }
+    .editable-cell:hover .toolbox {
+        display:block;
+    }
+    .products-list .editor .toolbox {
+        bottom: -58px;
+        display:block;
+    }
+</style>
+<div class="panel">
+    <div class="panel-heading">
+        Filters
+            <span class="panel-heading-action">
+            <a href="javascript:void(0);" class="list-toolbar-btn" ng-click="resetFilters();">
+                <span title="" data-toggle="tooltip" class="label-tooltip" data-original-title="Reset" data-html="true"  data-placement="top">
+                <i class="process-icon-remove icon-remove text-center"></i>
+            </span>
+            </a>
+            </span>
+    </div>
+    <div class="form-group col-xs-12 col-sm-6 col-md-4">
+        <input type="text" placeholder="Search" ng-model="query.keywords" ng-change="updateFilteredList()" ng-model-options="{debounce: 500}"/>
+    </div>
+    <div class="form-group col-xs-12 col-sm-6 col-md-4">
+        <select style="width:100%;" ng-model="query.category" ng-change="updateFilteredList()">
+            <option value="" style="display:none;" selected="selected">Filter by category</option>
+            <option ng-repeat="option in categories | object2Array | orderBy : 'fullName'" value="{{option.id_category}}">
+                {{option.fullName}}
+            </option>
+        </select>
+    </div>
+
+    <div class="form-group col-xs-6 col-sm-6 col-md-3">
+        <div class="col-md-12">
+            <select ng-model="selectedLanguage" ng-options="lang.id_lang as lang.name for lang in languages" ng-change="update(1)"></select>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+<div class="panel">
+
+    <div class="panel-heading">
+        Products  <span class="badge"> {{filteredList.length}}  / {{products.length}}</span>
+            <span class="panel-heading-action">
+            <a href="javascript:void(0);" class="list-toolbar-btn" ng-click="update(1);">
+                <span title="" data-toggle="tooltip" class="label-tooltip" data-original-title="Reload" data-html="true"  data-placement="top">
+                <i class="process-icon-refresh" ></i>
+            </span>
+            </a>
+            </span>
+    </div>
+
+
+    <div class="clearfix"></div>
+    <div class="table-responsive products-list">
+        <at-pagination at-list="filteredList" class="pull-left" at-config="config"></at-pagination>
+        <div class="pull-right" style="padding-top: 18px;">
+           <select style="display:inline; width:auto;" ng-model="config.itemsPerPage">
+                <option value="" style="display:none"></option>
+                <option value="10" ng-selected="config.itemsPerPage == 10">10</option>
+                <option value="20" ng-selected="config.itemsPerPage == 20">20</option>
+                <option value="50" ng-selected="config.itemsPerPage == 50">50</option>
+                <option value="100" ng-selected="config.itemsPerPage == 100">100</option>
+                <option value="500" ng-selected="config.itemsPerPage == 500">500</option>
+                <option value="1000" ng-selected="config.itemsPerPage == 1000">1000</option>
+            </select><span class="pull-right" style="font-size: 14px;padding: 5px;"> / {{filteredList.length}}</span>
+        </div>
+        <table class="table table-striped table-hover products-list" at-table at-paginated at-list="filteredList" at-config="config">
+            <thead>
+            <tr>
+                <th at-attribute="id_product">id</th>
+                <th at-attribute="thumbnail">Image</th>
+                <th at-attribute="reference" class="text-right">Code</th>
+                <th at-attribute="name">Name</th>
+                <th at-attribute="id_category_default" class="col-sm-2">Category</th>
+                <th at-attribute="quantity" class="text-right col-sm-1">Qty</th>
+                <th at-attribute="priceTE" class="text-right col-sm-1">Price TE</th>
+                <th at-attribute="priceTI" class="text-right col-sm-1">Price TI</th>
+                <th at-attribute="link" class="text-right col-sm-1">Tools</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-class="{active: item.showModal}">
+                <td at-attribute="id_product" at-sortable style="width:20px;" class="text-center">
+                    {{item.id_product}}
+                </td>
+                <td at-attribute="thumbnail" style="width:50px;" class="text-center">
+                    <div class="" ng-bind-html="item.thumbnail | sanitize">
+                    </div>
+                </td>
+                <td at-attribute="reference" at-sortable style="width:100px;" class="text-right">
+                    <div ng-hide="item.showRefEditor" class="value" ng-click="item.showRefEditor = true; originalValueRef = item.reference;">{{item.reference}}</div>
+                    <div ng-if="item.showRefEditor" class="editor">
+                        <div class="col-sm-12">
+                            <input focus-on-show ng-show="item.showRefEditor" style="width:100%;" type="text" ng-model="item.reference" ng-disabled="item.disabled" ng-keyup="$event.keyCode == 13 && updateProductField('reference', item)"/>
+                        </div>
+                        <div ng-hide="item.disabled" class="toolbox col-sm-12">
+                            <a href="javascript:void(0)" ng-click="updateProductField('reference', item)">Update</a> -
+                            <a href="javascript:void(0)" ng-click="item.showRefEditor = false; item.reference = originalValueRef;">Cancel</a>
+                        </div>
+                    </div>
+                </td>
+                <td at-attribute="name" at-sortable class="">
+                    <div ng-hide="item.showNameEditor" class="editable-cell">
+                        <div  class="value" ng-click="item.showNameEditor = true;originalValueName = item.name">{{item.name}}
+                        </div>
+                        <div class="toolbox left col-sm-12">
+                            <a href="javascript:void(0)" ng-click="item.showModal = item.showQuickEdit = 1;">More</a>
+                            -
+                            <a href="javascript:void(0)" ng-click="item.showModal = item.showSeoModal = 1;">Seo</a>
+                            -
+                            <a href="javascript:void(0)" ng-click="item.showModal = item.showFeatureModal = 1;">Features</a>
+
+                        </div>
+                    </div>
+
+                    <div ng-if="item.showNameEditor" class="editor">
+                        <div class="col-sm-12">
+                            <input focus-on-show ng-show="item.showNameEditor" style="width:100%;" type="text" ng-model="item.name" ng-disabled="item.disabled" ng-keyup="$event.keyCode == 13 && updateProductField('name', item)"/>
+                        </div>
+                        <div ng-hide="item.disabled" class="toolbox col-sm-12">
+                            <a href="javascript:void(0)" ng-click="updateProductField('name', item)">Update</a> -
+                            <a href="javascript:void(0)" ng-click="item.showNameEditor = false; item.name = originalValueName">Cancel</a>
+                        </div>
+                    </div>
+                </td>
+                <td at-attribute="id_category_default" at-sortable class="col-sm-2">
+                    <div ng-hide="item.showCategoryEditor" class="value"
+                         ng-click="item.showCategoryEditor = true;originalValueCat = item.id_category_default">{{
+                        getCategoryName(item.id_category_default) }}
+                    </div>
+                    <div ng-if="item.showCategoryEditor" class="editor">
+                        <div class="col-sm-12">
+                            <select focus-on-show ng-show="item.showCategoryEditor" style="width:100%;" ng-model="item.id_category_default" ng-change="updateProductField('category', item)">
+                                <option ng-repeat="option in item.categories" value="{{option}}" ng-selected="item.id_category_default == option">
+                                    {{ getCategoryName(option, 1) }}
+                                </option>
+                            </select>
+                        </div>
+                        <div ng-hide="item.disabled" class="toolbox col-sm-12">
+                            <a href="javascript:void(0)" ng-click="updateProductField('category', item)">Update</a>
+                            -
+                            <a href="javascript:void(0)" ng-click="item.showCategoryEditor = false; item.id_category_default = originalValueCat">Cancel</a>
+                        </div>
+                    </div>
+                </td>
+                <td at-attribute="quantity" class="col-sm-1 text-right">
+                    <div class="editable-cell">
+
+                        <div ng-if="!item.hasAttributes()" ng-hide="item.showQuantityEditor" class="value text-right" ng-click="item.showQuantityEditor = true;item.originalValueQty = item.quantity;">
+                            {{item.quantity}}
+                        </div>
+                        <div ng-if="item.hasAttributes()" ng-hide="item.showQuantityEditor" class="value text-right" ng-click="item.showModal = item.showAttributesModal = 1;">
+                            {{item.quantity}}
+                        </div>
+
+                        <div ng-if="item.hasAttributes()" class="toolbox col-sm-12">
+                            <a href="javascript:void(0)" ng-click="item.showModal = item.showAttributesModal = 1;">Combinations quantities</a>
+                        </div>
+                    </div>
+                    <div ng-if="item.showQuantityEditor" class="editor">
+                        <div class="col-sm-12">
+                            <input focus-on-show  ng-show="item.showQuantityEditor" style="width:100%;" type="number" ng-model="item.quantity" ng-disabled="item.disabled" ng-keyup="$event.keyCode == 13 && updateProductField('quantity', item)"/>
+                        </div>
+                        <div ng-hide="item.disabled" class="toolbox col-sm-12">
+                            <a href="javascript:void(0)" ng-click="updateProductField('quantity', item);">Update</a>
+                            -
+                            <a href="javascript:void(0)" ng-click="item.showQuantityEditor = false; item.quantity = item.originalValueQty;">Cancel</a>
+                        </div>
+                    </div>
+                </td>
+                <td at-attribute="priceTE" at-sortable class="col-sm-1 text-right">
+
+                    <div class="editable-cell">
+                        <div ng-hide="item.showPriceEditor" class="value text-right"
+                             ng-click="item.showPriceEditor = true;originalValuePrice = item.priceTE;">
+                            {{item.priceTE | currency : ''}}
+                        </div>
+                        <div ng-if="item.hasAttributes()" class="toolbox col-sm-12">
+                            <a href="javascript:void(0)" ng-click="item.showModal = item.showAttributesModal = 1;">Combinations Prices</a>
+                        </div>
+                    </div>
+
+                    <div ng-if="item.showPriceEditor" class="editor">
+                        <div class="col-sm-12">
+                            <input focus-on-show ng-show="item.showPriceEditor" style="width:100%;" type="text" ng-model="item.priceTE"  ng-disabled="item.disabled" ng-keyup="priceTEUpdated(item); $event.keyCode == 13 && updateProductField('price', item)"/>
+                        </div>
+                        <div ng-hide="item.disabled" class="toolbox col-sm-12">
+                            <a href="javascript:void(0)" ng-click="updateProductField('price', item)">Update</a> -
+                            <a href="javascript:void(0)" ng-click="item.showPriceEditor = false; item.priceTE = originalValuePrice;">Cancel</a>
+                        </div>
+                    </div>
+                </td>
+                <td at-attribute="priceTI" at-sortable class="col-sm-1 text-right">
+
+                    <div class="editable-cell">
+                        <div ng-if="!item.hasAttributes()" ng-hide="item.showPriceTIEditor" class="value text-right" ng-click="item.showPriceTIEditor = true; item.originalValuePriceTI = item.priceTI;">
+                            {{item.priceTI | currency : ''}}
+                        </div>
+                        <div ng-if="item.hasAttributes()" class="value text-right" ng-click="item.showModal = item.showAttributesModal = 1;">
+                            {{item.price_final | currency : ''}}
+                        </div>
+
+                        <div ng-if="item.hasAttributes()" class="toolbox col-sm-12">
+                            <a href="javascript:void(0)" ng-click="item.showModal = item.showAttributesModal = 1;">Combinations Prices</a>
+                        </div>
+                    </div>
+
+                    <div ng-if="item.showPriceTIEditor" class="editor">
+                        <div class="col-sm-12">
+                            <input focus-on-show ng-show="item.showPriceTIEditor" style="width:100%;" type="text" ng-model="item.priceTI" ng-disabled="item.disabled" ng-keyup="priceTIUpdated(item); $event.keyCode == 13 && updateProductField('price', item)"/>
+                        </div>
+                        <div ng-hide="item.disabled" class="toolbox col-sm-12">
+                            <a href="javascript:void(0)" ng-click="updateProductField('price', item)">Update</a> -
+                            <a href="javascript:void(0)" ng-click="item.showPriceTIEditor = false; item.priceTI = item.originalValuePriceTI;">Cancel</a>
+                        </div>
+                    </div>
+                </td>
+                <td at-attribute="active" at-sortable class="text-center">
+                    <i ng-show="item.active" class="icon-check" style="color:green; cursor:pointer;" ng-click="item.active = !item.active; updateProductField('active', item)"></i>
+                    <i ng-hide="item.active" class="icon-remove" style="color:red; cursor:pointer;" ng-click="item.active = !item.active; updateProductField('active', item)"></i>
+                </td>
+
+
+                <td at-attribute="link" at-sortable class="text-center">
+                    <div class="btn-group-action">
+                        <div class="btn-group pull-right">
+                            <a href="javascript:void(0)" ng-click="item.showModal = item.showQuickEdit = 1;" title="Modifier" class="edit btn btn-default">
+                                <i class="icon-pencil"></i> Quick Edit
+                            </a>
+                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-caret-down"></i>&nbsp;
+                            </button>
+                            <ul class="dropdown-menu">
+                                 <li>
+                                     <a href="javascript:void(0)" ng-click="item.showModal = item.showFeatureModal = 1;" title="Modifier" class="">
+                                         <i class="icon-pencil"></i> Caracteristiques
+                                     </a>
+                                 </li>
+                                 <li ng-if="item.hasAttributes()" >
+                                     <a href="javascript:void(0)" ng-click="item.showModal = item.showAttributesModal = 1;" title="Modifier" class="">
+                                         <i class="icon-pencil"></i> Attributes
+                                     </a>
+                                 </li>
+                                 <li>
+                                     <a href="javascript:void(0)" ng-click="item.showModal = item.showSeoModal = 1;" title="Modifier" class="">
+                                         <i class="icon-pencil"></i> Seo
+                                     </a>
+                                 </li>
+                                <li class="divider">
+
+                                 <li>
+                                  <a href="{{item.link}}" title="Modifier" class="">
+                                         <i class="icon-pencil"></i> Modifier
+                                     </a>
+                                 </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                <div ng-if="item.showQuickEdit" style="display:block;background-color:rgba(0, 0, 0, 0.12);" class="modal">
+                        <div class="modal-dialog" style="width:90%; max-width:1000px;" ng-controller="productController" ng-init="init($parent.item)">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" ng-click="item.showModal = item.showQuickEdit = false;"  aria-hidden="true">×</button>
+                                    <h4 class="modal-title"><i class="icon-info"></i> Informations</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div ng-include="baseUrl + '/views/js/app/templates/product.html'"></div>
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="modal-footer">
+                                    <button ng-disabled="disabled" type="button" class="btn btn-default" ng-click="item.showModal = item.showQuickEdit = false;" data-dismiss="modal">Annuler</button>
+                                    <button ng-disabled="disabled"  type="button" class="btn btn-primary " ng-click="save()">
+                                        Enregistrer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                <div ng-if="item.showFeatureModal" style="display:block;background-color:rgba(0, 0, 0, 0.12);" class="modal">
+                        <div class="modal-dialog" style="width:90%; max-width:1000px;" ng-controller="productFeaturesController" ng-init="init($parent.item, $parent.selectedLanguage)">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" ng-click="item.showModal = item.showFeatureModal = false;"  aria-hidden="true">×</button>
+                                    <h4 class="modal-title"><i class="icon-info"></i> Features</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div ng-include="baseUrl + '/views/js/app/templates/productFeatures.html'"></div>
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="modal-footer">
+                                    <button ng-disabled="disabled" type="button" class="btn btn-default" ng-click="item.showModal = item.showFeatureModal = false;" data-dismiss="modal">Annuler</button>
+                                    <button ng-disabled="disabled"  type="button" class="btn btn-primary " ng-click="save()">
+                                        Enregistrer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                <div ng-if="item.showSeoModal" style="display:block;background-color:rgba(0, 0, 0, 0.12);" class="modal">
+                    <div class="modal-dialog" style="width:90%; max-width:1000px;" ng-controller="productSEOController" ng-init="init($parent.item, $parent.selectedLanguage)">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" ng-click="item.showModal = item.showSeoModal = false;"  aria-hidden="true">×</button>
+                                <h4 class="modal-title"><i class="icon-info"></i> Référencement - SEO</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div ng-include="baseUrl + '/views/js/app/templates/productSeo.html'"></div>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="modal-footer">
+                                <button ng-disabled="disabled" type="button" class="btn btn-default" ng-click="item.showModal = item.showSeoModal = false;" data-dismiss="modal">Annuler</button>
+                                <button ng-disabled="disabled"  type="button" class="btn btn-primary " ng-click="save()">
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-if="item.showAttributesModal" style="display:block;background-color:rgba(0, 0, 0, 0.12);" class="modal">
+                    <div class="modal-dialog" style="width:90%; max-width:1000px;" ng-controller="productAttributesController" ng-init="init($parent.item)">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" ng-click="item.showModal = item.showAttributesModal = false;"  aria-hidden="true">×</button>
+                                <h4 class="modal-title"><i class="icon-info"></i> Combinations</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div ng-include="baseUrl + '/views/js/app/templates/productAttributes.html'"></div>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="modal-footer">
+                                <button ng-disabled="disabled" type="button" class="btn btn-default" ng-click="item.showModal = item.showAttributesModal = false;" data-dismiss="modal">Annuler</button>
+                                <button ng-disabled="disabled"  type="button" class="btn btn-primary " ng-click="save()">
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="well" ng-show="loading">
+            Loading products...
+        </div>
+
+        <at-pagination at-list="filteredList" at-config="config"></at-pagination>
+    </div>
+
+
+
+
+</div>

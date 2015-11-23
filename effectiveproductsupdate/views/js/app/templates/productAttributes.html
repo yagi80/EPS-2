@@ -1,0 +1,77 @@
+<!--<div>{{product.reference}}</div>-->
+<!--<div>{{product.name}}</div>-->
+<!--<div>{{product.price | currency : ''}}</div>-->
+<!--<div>{{product}}</div>-->
+
+<form id="product_form" class="form-horizontal col-lg-12 col-md-12">
+    <div class="well col-md-12" ng-show="isLoading()">Chargement en cours</div>
+
+
+    <table ng-show="!isLoading()" class="table">
+        <thead>
+        <tr>
+            <th><span class="title_box">Designation</span></th>
+            <th><span class="title_box">Reference</span></th>
+            <th><span class="title_box">EAN</span></th>
+            <th><span class="title_box">UPC</span></th>
+            <th><span class="title_box">Price impact TE</span></th>
+            <th><span class="title_box">Price impact TI</span></th>
+            <th><span class="title_box">Total TE</span></th>
+            <th><span class="title_box">Total TI</span></th>
+            <th><span class="title_box">Quantity</span></th>
+            <th><span class="title_box">Default</span></th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr ng-repeat="item in attributes">
+            <td class="text-left">{{item.attribute_designation}}</td>
+            <td>
+                <input ng-show="item.editRef" class="editor" type="text" ng-blur="item.editRef = 0" ng-model="item.reference" focus-on-show/>
+                <span ng-hide="item.editRef" class="value" ng-click="item.editRef = 1;">{{item.reference ? item.reference : '---'}}</span>
+            </td>
+            <td>
+
+                <input ng-show="item.editEan" class="editor" type="text" ng-blur="item.editEan = 0" ng-model="item.ean13" focus-on-show/>
+                <span ng-hide="item.editEan" class="value" ng-click="item.editEan = 1;">{{item.ean13 ? item.ean13 : '---'}}</span>
+            </td>
+            <td>
+                <input ng-show="item.editUpc" class="editor" type="text" ng-blur="item.editUpc = 0" ng-model="item.upc" focus-on-show/>
+                <span ng-hide="item.editUpc" class="value" ng-click="item.editUpc = 1;">{{item.upc ? item.upc : '---'}}</span>
+            </td>
+            <td>
+                <input ng-show="item.editPriceTe" class="editor" type="number" ng-blur="item.editPriceTe = 0" ng-model="item.priceTE" string-to-number ng-change="priceTEUpdated(item);" ng-keyup="" focus-on-show/>
+                <span ng-hide="item.editPriceTe" class="value" ng-click="item.editPriceTe = 1;" >{{item.priceTE | currency : ''}}</span>
+            </td>
+            <td>
+
+                <input ng-show="item.editPriceTI" class="editor" type="number" ng-blur="item.editPriceTI = 0" ng-model="item.priceTI" string-to-number ng-change="priceTIUpdated(item);" ng-keyup="" focus-on-show/>
+                <span ng-hide="item.editPriceTI" class="value" ng-click="item.editPriceTI = 1;">{{item.priceTI | currency : ''}}</span>
+            </td>
+            <td>
+
+                <input ng-show="item.editFinalPriceTe" class="editor" type="number" ng-blur="item.editFinalPriceTe = 0"  ng-model="item.finalPriceTE" string-to-number ng-change="item.calcFromFinalPriceTE();" ng-keyup="" focus-on-show/>
+                <span ng-hide="item.editFinalPriceTe" class="value" ng-click="item.editFinalPriceTe = 1;">{{item.finalPriceTE | currency : ''}}</span>
+            </td>
+            <td>
+
+                <input ng-show="item.editFinalPriceTI" class="editor" type="number" ng-blur="item.editFinalPriceTI = 0" ng-model="item.finalPriceTI" string-to-number ng-change="item.calcFromFinalPriceTI();" ng-keyup="" focus-on-show/>
+                <span ng-hide="item.editFinalPriceTI"class="value" ng-click="item.editFinalPriceTI = 1;">{{item.finalPriceTI | currency : ''}}</span>
+            </td>
+            <td>
+
+                <input ng-show="item.editQuantity" class="editor" type="number" ng-blur="item.editQuantity = 0" ng-model="item.quantity" focus-on-show/>
+                <span ng-hide="item.editQuantity" class="value" ng-click="item.editQuantity = 1;">{{item.quantity}}</span>
+            </td>
+            <td>
+                <i ng-show="item.default_on == 1" class="icon-check" style="color:green;" ></i>
+                <i ng-hide="item.default_on == 1" class="icon-remove" style="color:red; cursor:pointer;" ng-click="setDefault(item)"></i>
+            </td>
+        </tr>
+
+
+        </tbody>
+    </table>
+    <div class="clearfix"></div>
+</form>

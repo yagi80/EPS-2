@@ -1,0 +1,84 @@
+<form id="product_form" class="form-horizontal col-lg-12 col-md-12">
+
+    <!--<div class="form-group col-xs-6 col-sm-6 col-md-6">-->
+        <!--<label class="control-label col-md-4">-->
+            <!--Language-->
+        <!--</label>-->
+        <!--<div class="col-md-8">-->
+
+            <!--<select ng-disabled="disabled" ng-model="selectedLanguage" ng-options="lang.id_lang as lang.name for lang in languages">-->
+            <!--</select>-->
+        <!--</div>-->
+    <!--</div>-->
+    <ul class="nav nav-tabs">
+        <li ng-repeat="item in languages"  ng-class="langClass(item)"><a href="javascript:void(0)" ng-click="setLanguage(item.id_lang)" >{{item.name}}</a></li>
+    </ul>
+
+    <div class="clearfix"></div>
+    <div class="well col-md-12" ng-show="isLoading()">Chargement en cours</div>
+
+    <div id="product-seo" ng-hide="isLoading()" class="clearfix product-tab">
+        <div class="form-group">
+            <div class="col-lg-1"><span class="pull-right"></span></div>
+            <label class="control-label col-lg-2">
+			<span class="label-tooltip" data-toggle="tooltip" title="Le titre public de la page du produit, pour les moteurs de recherche. Pour utiliser simplement le nom du produit, laissez le champ vide. Le nombre de caractères restants est indiqué à la gauche du champ.">
+				Balise titre
+			</span>
+            </label>
+
+            <div class="col-lg-7">
+                <div class="col-lg-11">
+                    <div class="input-group">
+                        <span id="meta_title_1_counter" class="input-group-addon">35</span>
+                        <input ng-disabled="disabled" type="text" class="form-control " ng-change="product.link_rewrite[selectedLanguage] = convertToSlug(product.meta_title[selectedLanguage])" ng-model="product.meta_title[selectedLanguage]" data-maxchar="70">
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="col-lg-2">
+                <button ng-disabled="disabled" type="button" class="btn btn-default"  ng-click="copyFromProductName()"><i class="icon-random"></i> Générer</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-lg-1"><span class="pull-right">
+</span></div>
+            <label class="control-label col-lg-2" for="meta_description_1">
+			<span class="label-tooltip" data-toggle="tooltip" title="Cette description apparaîtra dans les moteurs de recherche. Elle doit consister en une seule phrase de 160 caractères maximum (espaces comprises).">
+				Meta description
+			</span>
+            </label>
+
+            <div class="col-lg-7">
+                <div class="col-lg-11">
+                    <div class="input-group">
+                        <span id="meta_description_1_counter" class="input-group-addon">160</span>
+                        <input ng-disabled="disabled" type="text" id="meta_description_1" class="form-control "  ng-model="product.meta_description[selectedLanguage]" data-maxchar="160">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-lg-1"><span class="pull-right"></span>
+            </div>
+            <label class="control-label col-lg-2" for="link_rewrite_1">
+			<span class="label-tooltip" data-toggle="tooltip" title="Il s'agit de l'adresse lisible, telle que générée à partir du nom du produit. Vous pouvez la changer si vous le souhaitez.">
+				URL simplifiée
+			</span>
+            </label>
+
+            <div class="col-lg-7">
+                <div class="col-lg-11">
+                    <input ng-disabled="disabled" type="text" id="link_rewrite_1" class="form-control " name="link_rewrite_1" ng-change="product.link_rewrite[selectedLanguage] = convertToSlug(product.link_rewrite[selectedLanguage])" ng-model="product.link_rewrite[selectedLanguage]" >
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <button ng-disabled="disabled" type="button" class="btn btn-default" id="generate-friendly-url" ng-click="product.link_rewrite[selectedLanguage] = convertToSlug(product.meta_title[selectedLanguage])"><i class="icon-random"></i> Générer</button>
+            </div>
+        </div>
+
+    </div>
+    <div class="clearfix"></div>
+</form>
